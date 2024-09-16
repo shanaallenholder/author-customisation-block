@@ -1,0 +1,13 @@
+{
+  
+    "dependencies": {
+      "@wordpress/blocks": "^12.0.0",
+      "@wordpress/components": "^12.0.0",
+      "@wordpress/data": "^*",
+      "@wordpress/block-editor": "^12.0.0"
+    },
+  
+  "devDependencies": {
+    "@wordpress/scripts": "^29.0.0"
+  }
+}
