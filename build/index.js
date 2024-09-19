@@ -45,54 +45,59 @@ function Edit({
     biography
   } = attributes;
   const [loaded, setLoaded] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_4__.useState)(false);
-  const [author, setAuthor] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_4__.useState)(false);
+  const [authors, setAuthors] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_4__.useState)([]);
 
-  // useSelect is a react hook that allows us to access the data from the wordpress data store
-  // select('core') access the core data store
-  // who: authors will fetch a list of authors who are authors 
-  const authors = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => {
-    return select('core').getUsers({
-      who: 'authors'
-    });
-  });
-
-  // This async function handles changes in a user selection (from my customised drop down box). Updates the blocks state and attributes and retrievies detailed user information from the REST API/ wordpress data store. 
-  const selectChange = async event => {
-    setAttributes({
-      selectedAuthor: parseInt(event.target.value)
-    });
-    setAuthor((0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.select)('core').getUsers({
-      id: event.target.value
-    }));
-    let response = await wp.apiFetch({
-      path: '/wp/v2/users/' + event.target.value
-    });
-    console.log(response);
-  };
+  // Fetching all users from the wp database
+  const allUsers = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => {
+    return select('core').getUsers();
+  }, []);
 
   // This useEffect will run everytime  the authors array changes. it will check if authors exists and if at least one item then it will return the authors array.
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_4__.useEffect)(() => {
-    console.log(selectedAuthor);
-    if (authors && authors.length) {
+    if (allUsers && allUsers.length) {
+      //filter the users by the role of author
+      const filteredAuthors = allUsers.filter(user => user.roles.includes('author'));
+      setAuthors(filteredAuthors);
       setLoaded(true);
     }
-  }, [authors]);
+  }, [allUsers]);
+
+  // This async function handles changes in a user selection (from my customised drop down box). Updates the blocks state and attributes and retrievies detailed user information from the REST API/ wordpress data store. 
+  const selectChange = async event => {
+    const authorId = parseInt(event.target.value);
+    try {
+      const response = await wp.apiFetch({
+        path: `/wp/v2/users/${authorId}`
+      });
+      setAttributes({
+        selectedAuthor: {
+          authorId: authorId,
+          authorName: response.name
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching the authors details', error);
+    }
+  };
 
   // select provides a user interface for selecting a author. It is a dropdown menu in HTML that allows users to select one option from a list
   // The onChange is set to selectChange which is called every time the user selects a different option from the dropdown
   // dafaultValue={''} ensures the drop down starts with no selected author first until one is selected.
   // My map maps over the authors array to generate options elements for each author.
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_element__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("p", {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("p", {
       ...(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)(),
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("select", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("select", {
         onChange: selectChange,
         defaultValue: '',
-        children: loaded ? authors.map((author, index) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("option", {
+        children: loaded ? authors.map(author => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("option", {
           value: author.id,
           children: [" ", author.name, " "]
-        }, index)) : 'Authors Loading..'
-      })
+        }, author.id)) : 'Authors Loading..'
+      }), authorImage && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("img", {
+        src: authorImage ? authorImage.url : '',
+        alt: authorImage ? authorImage.title : ''
+      })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.InspectorControls, {
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
         title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Image upload'),
@@ -182,20 +187,18 @@ function save({
 }) {
   const {
     authorImage,
-    biography
+    biography,
+    selectedAuthor
   } = attributes;
-  console.log('Attributes:', attributes);
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
     ..._wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save(),
     className: "author-customisation-block",
     children: [authorImage && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-      src: authorImage.url,
-      alt: authorImage.title,
-      style: {
-        maxWidth: '100%',
-        height: 'auto'
-      }
-    }), biography && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.RichText.Content, {
+      src: authorImage ? authorImage.url : '',
+      alt: authorImage ? authorImage.title : ''
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+      children: selectedAuthor.authorName
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.RichText.Content, {
       tagName: "p",
       value: biography
     })]

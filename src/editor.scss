@@ -7,12 +7,14 @@
 .wp-block-create-block-author-block {
 	border: 1px dotted #f00;
 }
+
 .author-customisation-block {
     /* Styles for the block container */
 	padding: 20px;
 	background-color: #f9f9f9;
 	border: 1px solid #ddd;
 	border-radius: 10px;
+	box-shadow: #f00;
 	max-width: 600px;
 	margin: 0 auto;
 	text-align: center;
@@ -20,7 +22,8 @@
 
 .author-customisation-block img {
 	border-radius: 50px;
-	max-width: 150px;
+	border: 5px solid grey;
+	max-width: 100%; 
 	height: auto;
 	margin-bottom: 10px;
 }
@@ -32,6 +35,7 @@
 
 .author-customisation-select {
     /* Styles for the author selection dropdown */
+
 }
 
 .author-customisation-image {
@@ -44,4 +48,6 @@
 
 .author-customisation-biography {
     /* Styles for the biography text on the frontend */
+	
+
 }

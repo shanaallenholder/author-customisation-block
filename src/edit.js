@@ -10,36 +10,37 @@ import { RichText } from '@wordpress/block-editor';
 export default function Edit( { attributes, setAttributes } ) {
 	const { authorImage, selectedAuthor, biography } = attributes;
 	const [ loaded, setLoaded ] = useState(false);
-	const [ author, setAuthor ] = useState(false);
-	
-	// useSelect is a react hook that allows us to access the data from the wordpress data store
-	// select('core') access the core data store
-	// who: authors will fetch a list of authors who are authors 
-	const authors = useSelect((select)=>{
-		return select('core').getUsers({ who: 'authors' });
-	});
+	const [ authors, setAuthors ] = useState([]);
 
-	
-// This async function handles changes in a user selection (from my customised drop down box). Updates the blocks state and attributes and retrievies detailed user information from the REST API/ wordpress data store. 
+	// Fetching all users from the wp database
+	const allUsers = useSelect((select) => {
+		return select('core').getUsers();
+	}, []);
+ 
+
+	// This useEffect will run everytime  the authors array changes. it will check if authors exists and if at least one item then it will return the authors array.
+	useEffect(() => {
+		if(allUsers && allUsers.length) {
+			//filter the users by the role of author
+			const filteredAuthors = allUsers.filter(user => user.roles.includes('author'))
+			setAuthors(filteredAuthors);
+			setLoaded(true);
+		}
+	}, [allUsers]);
+
+	// This async function handles changes in a user selection (from my customised drop down box). Updates the blocks state and attributes and retrievies detailed user information from the REST API/ wordpress data store. 
 	const selectChange = async ( event ) => {
-		setAttributes({selectedAuthor: parseInt(event.target.value) });
+		const authorId = parseInt(event.target.value);
+		
 
-		setAuthor(select('core').getUsers({id: event.target.value}));
-
-		let response = await wp.apiFetch({path: '/wp/v2/users/' + event.target.value});
-
-		console.log(response);
+     try {
+		const response = await wp.apiFetch({path: `/wp/v2/users/${authorId}` });
+		setAttributes({selectedAuthor: {authorId: authorId, authorName: response.name}});
+	 }catch (error) {
+		console.error('Error fetching the authors details', error);
+	 }
+		
 	}
-
-// This useEffect will run everytime  the authors array changes. it will check if authors exists and if at least one item then it will return the authors array.
-	useEffect( () => {
-		console.log(selectedAuthor);
-		if( authors && authors.length ) {
-			setLoaded( true )
-		} 
-    }, [authors] )
-
-
 
 	// select provides a user interface for selecting a author. It is a dropdown menu in HTML that allows users to select one option from a list
 	// The onChange is set to selectChange which is called every time the user selects a different option from the dropdown
@@ -49,8 +50,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		<Fragment>
 		<p { ...useBlockProps() }>
 			<select onChange={selectChange} defaultValue={''}>
-			{ loaded ? authors.map((author, index) => ( <option key={index} value={author.id}> {author.name} </option> )) : 'Authors Loading..'}
+			{ loaded ? authors.map((author) => ( <option key={author.id} value={author.id}> {author.name} </option> )) : 'Authors Loading..'}
 			</select>
+			{authorImage && (
+				<img
+				 src={authorImage ? authorImage.url : ''}
+			     alt={authorImage ? authorImage.title : ''}
+				/>
+			)}
 		</p>
 		<InspectorControls>
 			<PanelBody title={__('Image upload')} initialOpen={false}>

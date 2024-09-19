@@ -16,27 +16,20 @@ import { useBlockProps, RichText } from '@wordpress/block-editor';
  * @return {Element} Element to render.
  */
 export default function save({attributes}) {
-	const { authorImage, biography } = attributes;
-
-	console.log('Attributes:', attributes);
-
+	const { authorImage, biography, selectedAuthor } = attributes;
 
 	return (
 		<div  {...useBlockProps.save()} className={"author-customisation-block"}>
-		
-			{authorImage && (
+				{authorImage && (
 				<img
-				src={authorImage.url}
-				alt={authorImage.title}
-				style={{maxWidth: '100%', height: 'auto'}}
+				 src={authorImage ? authorImage.url : ''}
+			     alt={authorImage ? authorImage.title : ''}
 				/>
 			)}
-			{biography && (
-				<RichText.Content
-				tagName="p"
-				value={biography}
-				/>
-			)}
+		<p>
+			{selectedAuthor.authorName}
+		</p>
+		<RichText.Content tagName='p' value={biography} />	
 		</div>
 	);
 }

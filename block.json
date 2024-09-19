@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 2,
+    "name": "custom/author-block",
+    "title": "Author Profile",
+    "description": "Block to display an author's profile.",
+    "category": "widgets",
+    "icon": "admin-users",
+    "keywords": ["author", "profile", "social"],
+    "supports": {
+        "html": false
+    },
+    "attributes": {
+        "selectedAuthor": {
+            "type": "string",
+            "default": ""
+        },
+        "biography": {
+            "type": "string",
+            "default": ""
+        },
+        "authorImage": {
+            "type": "object",
+            "default": {}
+        }
+    },
+    "editorScript": "author_customisation_block",
+    "editorStyle": "author_customisation_block_editor",
+    "render": "custom_author_block_render"
+}
