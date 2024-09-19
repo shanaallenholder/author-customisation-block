@@ -177,10 +177,28 @@ __webpack_require__.r(__webpack_exports__);
  * @return {Element} Element to render.
  */
 
-function save() {
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+function save({
+  attributes
+}) {
+  const {
+    authorImage,
+    biography
+  } = attributes;
+  console.log('Attributes:', attributes);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
     ..._wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save(),
-    children: 'Author Block – hello from the saved content!'
+    className: "author-customisation-block",
+    children: [authorImage && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+      src: authorImage.url,
+      alt: authorImage.title,
+      style: {
+        maxWidth: '100%',
+        height: 'auto'
+      }
+    }), biography && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.RichText.Content, {
+      tagName: "p",
+      value: biography
+    })]
   });
 }
 

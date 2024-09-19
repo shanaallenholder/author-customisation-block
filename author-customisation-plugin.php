@@ -22,7 +22,7 @@ add_action('edit_user_profile_update', 'save_author_profile_field'); //These hoo
 add_action('admin_footer-profile.php', 'set_form_enctype'); // These hooks add functionality to set the form enctype for the file uploads when viewing or editing a user profile.
 add_action('admin_footer-user-edit.php', 'set_form_enctype'); // These hooks add functionality to set the form enctype for the file uploads when viewing or editing a user profile.
 add_action('init', 'register_block'); // This registers a custom block when wordpress is initialised.
-
+add_action('enqueue_block_assets', 'register_block_assets');
 
 // This retrieves the meta fields (profile picture, Facebook, Twitter, Instagram links) for the current user. If the profile picture is missing it provides a default Gravatar image.
 // These fields are shown on the users profile page for viewing/editing.
@@ -87,7 +87,7 @@ function author_profile_field($user) {
 
 // This function is responsible for saving the custom author profile fileds (social media profiles and profile picture) when a user updates their profile in wordpress. 
 function save_author_profile_field($user_id) {
-    if(!current_user_can('edit_user', $user_id)){  // Checking if the current logged in user has permission to edit the profile of the user with ID $user_id. Ensuring that only authrised users can modify the profile.
+    if(!current_user_can('edit_user', $user_id)){  // Checking if the current logged in user has permission to edit the profile of the user with ID $user_id. Ensuring that only authorised users can modify the profile.
         return false;
     }
 
@@ -123,20 +123,22 @@ function set_form_enctype() {
 }
 
 // This function is used in wordpress to register a custom block script for Gutenberg. 
-// The 'wp-blocks' etc array are the depencies of my script. These are wordpress core javascript libraries that the script will depend on.
+// The 'wp-blocks' etc array are the dependencies of my script. These are wordpress core javascript libraries that the script will depend on.
 function register_block() {
-    wp_register_script (
-        'author_customisation_block',
-        plugins_url('build/index.js', __FILE__),
-        ['wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-data']
-    );
+//     wp_register_script (
+//         'author_customisation_block',
+//         plugins_url('build/index.js', __FILE__),
+//         ['wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-data']
+//     );
 
-// This code is registering my css file that will style my custom gutenberg block in the wordpress block editor. 
-    wp_register_style(
-        'author_customisation_block_editor',
-        plugins_url('build/index.css', __FILE__),
-        ['wp-edit-blocks']
-    );
+// // This code is registering my css file that will style my custom gutenberg block in the wordpress block editor. 
+//     wp_register_style(
+//         'author_customisation_block_editor',
+//         plugins_url('build/index.css', __FILE__),
+//         ['wp-edit-blocks']
+//     );
+
+// wp_enqueue_style( 'author_customisation_block_editor');
 
 // Here I am registering a new custom block in wordpress block editor.
 // Linking javascript and css
@@ -153,11 +155,38 @@ function register_block() {
                     'type' => 'string',
                     'default' => "",
                 ],
+                'biography' => [
+                    'type' => 'string',
+                    'default' => '',
+                ],
+                'authorImage' => [
+                    'type' => 'object',
+                    'default' => (object) [],
+                ]
             ],
         ]
         );
 
         
+
+}
+
+function register_block_assets() {
+
+    wp_register_script (
+        'author_customisation_block',
+        plugins_url('build/index.js', __FILE__),
+        ['wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-data']
+    );
+
+// This code is registering my css file that will style my custom gutenberg block in the wordpress block editor. 
+    wp_register_style(
+        'author_customisation_block_editor',
+        plugins_url('build/index.css', __FILE__),
+        ['wp-edit-blocks']
+    );
+
+wp_enqueue_style( 'author_customisation_block_editor');
 
 }
 

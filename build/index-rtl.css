@@ -9,3 +9,42 @@
 .wp-block-create-block-author-block {
   border: 1px dotted #f00;
 }
+
+.author-customisation-block {
+  /* Styles for the block container */
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.author-customisation-block img {
+  border-radius: 50px;
+  max-width: 150px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.author-customisation-block p {
+  font-size: 16px;
+  color: #333;
+}
+
+.author-customisation-select {
+  /* Styles for the author selection dropdown */
+}
+
+.author-customisation-image {
+  /* Styles for the uploaded image */
+}
+
+.author-customisation-profile-bio {
+  /* Styles for the biography text area in the editor */
+}
+
+.author-customisation-biography {
+  /* Styles for the biography text on the frontend */
+}

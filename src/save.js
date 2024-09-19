@@ -4,8 +4,8 @@
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
-import { useBlockProps } from '@wordpress/block-editor';
 
+import { useBlockProps, RichText } from '@wordpress/block-editor';
 /**
  * The save function defines the way in which the different attributes should
  * be combined into the final markup, which is then serialized by the block
@@ -15,10 +15,28 @@ import { useBlockProps } from '@wordpress/block-editor';
  *
  * @return {Element} Element to render.
  */
-export default function save() {
+export default function save({attributes}) {
+	const { authorImage, biography } = attributes;
+
+	console.log('Attributes:', attributes);
+
+
 	return (
-		<p { ...useBlockProps.save() }>
-			{ 'Author Block – hello from the saved content!' }
-		</p>
+		<div  {...useBlockProps.save()} className={"author-customisation-block"}>
+		
+			{authorImage && (
+				<img
+				src={authorImage.url}
+				alt={authorImage.title}
+				style={{maxWidth: '100%', height: 'auto'}}
+				/>
+			)}
+			{biography && (
+				<RichText.Content
+				tagName="p"
+				value={biography}
+				/>
+			)}
+		</div>
 	);
 }
